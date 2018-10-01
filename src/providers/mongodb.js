@@ -16,7 +16,16 @@ class MongoDBProvider extends SettingProvider {
 			throw new Error('mongoURI must be specified');
 		}
 
-		mongoose.connect(options.mongoURI, { useMongoClient: true });
+		const dbOptions = {
+			useNewUrlParser: true,
+			reconnectTries: Number.MAX_VALUE,
+			reconnectInterval: 500,
+			poolSize: 5,
+			connectTimeoutMS: 10000,
+			family: 4
+		};
+
+		mongoose.connect(options.mongoURI, dbOptions);
 		mongoose.Promise = Promise;
 		mongoose.set('debug', options.mongoDebug || false);
 

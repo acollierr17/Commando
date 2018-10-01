@@ -28,6 +28,7 @@ class MongoDBProvider extends SettingProvider {
 		mongoose.connect(options.mongoURI, dbOptions);
 		mongoose.Promise = Promise;
 		mongoose.set('debug', options.mongoDebug || false);
+		mongoose.set('useFindAndModify', false);
 
 		this.listeners = new Map();
 	}

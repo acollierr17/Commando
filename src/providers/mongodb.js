@@ -39,13 +39,13 @@ class MongoDBProvider extends SettingProvider {
 		this.client = client;
 
 		this.listeners
-			.set('commandPrefixChange', (guild, prefix) => this.set(guild, 'prefix', prefix))
-			.set('commandStatusChange', (guild, command, enabled) => this.set(guild, `cmd:${command.name}`, enabled))
-			.set('groupStatusChange', (guild, group, enabled) => this.set(guild, `grp:${group.name}`, enabled))
+			.set('commandPrefixChange', (guild, prefix) => this.constructor.set(guild, 'prefix', prefix))
+			.set('commandStatusChange', (guild, command, enabled) => this.constructor.set(guild, `cmd:${command.name}`, enabled))
+			.set('groupStatusChange', (guild, group, enabled) => this.constructor.set(guild, `grp:${group.name}`, enabled))
 			.set('guildCreate', async guild => {
-				const settings = await this.get(guild);
+				const settings = await this.constructor.get(guild);
 				if(!settings) return;
-				this.setupGuild(guild.id, settings);
+				this.constructor.setupGuild(guild.id, settings);
 			});
 
 		for(const [event, listener] of this.listeners) {
@@ -59,13 +59,13 @@ class MongoDBProvider extends SettingProvider {
 				continue;
 			}
 
-			this.setupGuild(guild.id, guild.settings);
+			this.constructor.setupGuild(guild.id, guild.settings);
 		}
 	}
 
 	// Removes all settings in a guild
 	async clear(guild) {
-		let guildObj = await this.getGuild(guild);
+		let guildObj = await this.constructor.getGuild(guild);
 		await guildObj.remove();
 	}
 
@@ -77,7 +77,7 @@ class MongoDBProvider extends SettingProvider {
 
 	// Obtains a setting for a guild
 	async get(guild, key, defValue) {
-		let guildObj = await this.getGuild(guild);
+		let guildObj = await this.constructor.getGuild(guild);
 		if(key === undefined) {
 			return guildObj.settings;
 		} else {
@@ -95,7 +95,7 @@ class MongoDBProvider extends SettingProvider {
 			return;
 		}
 
-		let guildObj = await this.getGuild(guild);
+		let guildObj = await this.constructor.getGuild(guild);
 
 		delete guildObj.settings[key];
 		guildObj.markModified('settings');
@@ -105,7 +105,7 @@ class MongoDBProvider extends SettingProvider {
 
 	// Sets a setting for a guild
 	async set(guild, key, val) {
-		let guildObj = await this.getGuild(guild);
+		let guildObj = await this.constructor.getGuild(guild);
 
 		guildObj.settings[key.toLowerCase()] = val;
 		guildObj.markModified('settings');
@@ -127,8 +127,8 @@ class MongoDBProvider extends SettingProvider {
 			else this.client._commandPrefix = settings.prefix;
 		}
 
-		for(const command of this.client.registry.commands.values()) this.setupGuildCommand(guild, command, settings);
-		for(const group of this.client.registry.groups.values()) this.setupGuildGroup(guild, group, settings);
+		for(const command of this.client.registry.commands.values()) this.constructor.setupGuildCommand(guild, command, settings);
+		for(const group of this.client.registry.groups.values()) this.constructor.setupGuildGroup(guild, group, settings);
 	}
 
 	setupGuildCommand(guild, command, settings) {

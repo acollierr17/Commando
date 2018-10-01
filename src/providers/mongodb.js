@@ -43,9 +43,9 @@ class MongoDBProvider extends SettingProvider {
 			.set('commandStatusChange', (guild, command, enabled) => this.set(guild, `cmd:${command.name}`, enabled))
 			.set('groupStatusChange', (guild, group, enabled) => this.set(guild, `grp:${group.name}`, enabled))
 			.set('guildCreate', async guild => {
-				const settings = await this.constructor.get(guild);
+				const settings = await this.get(guild);
 				if(!settings) return;
-				this.constructor.setupGuild(guild.id, settings);
+				this.setupGuild(guild.id, settings);
 			});
 
 		for(const [event, listener] of this.listeners) {
@@ -59,7 +59,7 @@ class MongoDBProvider extends SettingProvider {
 				continue;
 			}
 
-			this.constructor.setupGuild(guild.id, guild.settings);
+			this.setupGuild(guild.id, guild.settings);
 		}
 	}
 

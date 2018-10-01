@@ -366,7 +366,21 @@ declare module 'discord.js-commando' {
 		private setupGuildGroup(guild: Guild, group: CommandGroup, settings: {}): void;
 		private updateOtherShards(key: string, val: any): void;
 	}
-
+	export class MongoDBProvider extends SettingProvider {
+		public constructor(options: object);
+ 		public readonly client: CommandoClient;
+		private listeners: Map<any, any>;
+		
+		public clear(guild: Guild | string): Promise<void>;
+		public destroy(): Promise<void>;
+		public get(guild: Guild | string, key: string, defVal?: any): any;
+		public init(client: CommandoClient): Promise<void>;
+		public remove(guild: Guild | string, key: string): Promise<any>;
+		public set(guild: Guild | string, key: string, val: any): Promise<any>;
+		private setupGuild(guild: string, settings: {}): void;
+		private setupGuildCommand(guild: Guild, command: Command, settings: {}): void;
+		private setupGuildGroup(guild: Guild, group: CommandGroup, settings: {}): void;
+	}
 	export class util {
 		public static disambiguation(items: any[], label: string, property?: string): string;
 		public static paginate<T>(items: T[], page?: number, pageLength?: number): {
